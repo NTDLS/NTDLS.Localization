@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0;net10.0;net8.0-windows;net9.0-windows;net10.0-windows</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<RootNamespace>NTDLS.Localization</RootNamespace>
+
+		<!-- Windows Forms support (FormLocalizer) is only built for the Windows target. -->
+		<UseWindowsForms Condition="$(TargetFramework.EndsWith('-windows'))">true</UseWindowsForms>
+
+		<PackageId>NTDLS.Localization</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>NetworkDLS</Authors>
+		<Company>NetworkDLS</Company>
+		<Product>NTDLS.Localization</Product>
+		<Copyright>Copyright © 2026 NetworkDLS</Copyright>
+		<Description>Localization from a SQLite translation database: one row per phrase, one column per language.</Description>
+		<PackageTags>localization;translation;sqlite;winforms;i18n</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.13" />
+	</ItemGroup>
+
+	<ItemGroup Condition="!$(TargetFramework.EndsWith('-windows'))">
+		<Compile Remove="FormLocalizer.cs" />
+	</ItemGroup>
+
+</Project>
