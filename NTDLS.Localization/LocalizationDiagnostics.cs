@@ -6,7 +6,19 @@ namespace NTDLS.Localization
     /// </summary>
     public static class LocalizationDiagnostics
     {
+        /// <summary>
+        /// Invoked for warning notifications and provided with a message and an optional exception.
+        /// </summary>
+        /// <remarks>May be set to a delegate to handle warnings; null if no handler is registered.
+        /// Handlers should be short‑running and handle their own exceptions.</remarks>
         public static Action<string, Exception?>? OnWarning { get; set; }
+
+        /// <summary>
+        /// Invoked to report errors, receiving a message and an optional exception.
+        /// </summary>
+        /// <remarks>Assign a delegate to handle or log errors. May be null to disable error reporting.
+        /// Handlers should avoid throwing exceptions. Invocation occurs on the context that detects the
+        /// error.</remarks>
         public static Action<string, Exception?>? OnError { get; set; }
 
         internal static void Warning(string message, Exception? exception = null) => Report(OnWarning, message, exception);

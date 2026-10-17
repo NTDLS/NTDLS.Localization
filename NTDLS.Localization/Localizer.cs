@@ -32,6 +32,12 @@ namespace NTDLS.Localization
         private readonly TranslationDatabase _database;
         private readonly ConcurrentDictionary<string, bool> _reported = new();
 
+        /// <summary>
+        /// Initializes a new instance of Localizer that loads translations from the specified database file.
+        /// </summary>
+        /// <remarks>The path is forwarded to TranslationDatabase; exceptions thrown by that constructor
+        /// are propagated.</remarks>
+        /// <param name="databaseFile">Path to the translation database file.</param>
         public Localizer(string databaseFile)
         {
             _database = new TranslationDatabase(databaseFile);

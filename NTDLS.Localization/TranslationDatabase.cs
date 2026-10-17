@@ -160,6 +160,15 @@ namespace NTDLS.Localization
             }
         }
 
+        /// <summary>
+        /// Attempts to retrieve a localized translation for the specified English phrase in the given culture.
+        /// </summary>
+        /// <remarks>Returns false when translations are unavailable or when the culture is English. The
+        /// implementation searches configured language columns and lazily loads translation dictionaries.</remarks>
+        /// <param name="culture">Target culture for the translation.</param>
+        /// <param name="phrase">English phrase to translate.</param>
+        /// <param name="translation">When the method returns, contains the localized translation if found; otherwise an empty string.</param>
+        /// <returns>true if a translation was found and assigned to translation; otherwise false.</returns>
         public bool TryGetTranslation(CultureInfo culture, string phrase, out string translation)
         {
             translation = string.Empty;

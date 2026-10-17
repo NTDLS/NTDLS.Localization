@@ -12,8 +12,22 @@ namespace NTDLS.Localization
     /// </summary>
     public static class StaticLocalizer
     {
+        /// <summary>
+        /// Retrieves a localized string for the specified resource key.
+        /// </summary>
+        /// <remarks>Resolves translations using Localizer.Default.</remarks>
+        /// <param name="key">The resource key to look up.</param>
+        /// <returns>The localized string for the specified key, or the key itself if no translation is available.</returns>
         public static string Localize(string key) => Localizer.Default.Localize(key);
 
+        /// <summary>
+        /// Gets a localized string for the specified resource key and formats it with the provided arguments.
+        /// </summary>
+        /// <remarks>Resolution is performed by Localizer.Default using the current localization
+        /// configuration.</remarks>
+        /// <param name="key">The resource key identifying the text to localize.</param>
+        /// <param name="args">Optional format arguments applied to the localized string.</param>
+        /// <returns>The localized string formatted with the specified arguments.</returns>
         public static string Localize(string key, params object[] args) => Localizer.Default.Localize(key, args);
     }
 }

@@ -24,8 +24,19 @@ namespace NTDLS.Localization
 
         private static readonly ConditionalWeakTable<object, Dictionary<string, Remembered>> _remembered = new();
 
+        /// <summary>
+        /// Apply localization to the specified control and its descendant controls using the default Localizer.
+        /// </summary>
+        /// <param name="root">The root control to localize.</param>
         public static void Apply(Control root) => Apply(root, Localizer.Default);
 
+        /// <summary>
+        /// Localizes the control hierarchy starting at the specified root control.
+        /// </summary>
+        /// <remarks>Initializes a new visited set to prevent cycles and delegates traversal to
+        /// Translate.</remarks>
+        /// <param name="root">The root control whose descendants are localized.</param>
+        /// <param name="localizer">The ILocalizer used to translate text and resources for controls.</param>
         public static void Apply(Control root, ILocalizer localizer) => Translate(root, localizer, new HashSet<object>());
 
         /// <summary>
