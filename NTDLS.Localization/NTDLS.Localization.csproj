@@ -6,16 +6,13 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>latest</LangVersion>
 		<RootNamespace>NTDLS.Localization</RootNamespace>
-
-
 		<PackageTags>wiki;plugin;sqlite;content-management;</PackageTags>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<IncludeSymbols>True</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageIcon>Logo.png</PackageIcon>
-
 
 		<!-- Windows Forms support (FormLocalizer) is only built for the Windows target. -->
 		<UseWindowsForms Condition="$(TargetFramework.EndsWith('-windows'))">true</UseWindowsForms>
