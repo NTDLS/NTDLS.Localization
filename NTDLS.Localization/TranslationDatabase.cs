@@ -8,9 +8,10 @@ namespace NTDLS.Localization
     /// Reads translations from a SQLite database. The table is called Translation. It has one row per English phrase and one
     /// column per language:
     ///
-    ///   Id       INTEGER PRIMARY KEY
+    ///   TranslationId  INTEGER PRIMARY KEY
     ///   Phrase   TEXT NOT NULL UNIQUE COLLATE NOCASE   (the English phrase as it is written in the source code: the key)
     ///   de, fr, ja, zh-Hans, pt-BR ...  TEXT           (one column per language, named by its culture code; empty means "not translated yet")
+    ///   LastModified  TEXT                              (when the row was last changed, UTC; not read here)
     ///
     /// The database is only read, never changed. Each language is read once, the first time it is needed, and is then served from memory.
     /// </summary>
@@ -18,9 +19,7 @@ namespace NTDLS.Localization
     {
         private const string TableName = "Translation";
         private const string SourceColumn = "Phrase";
-
-        //Databases made before the key column was called Phrase.
-        private const string LegacySourceColumn = "English";
+        private const string LastModifiedColumn = "LastModified";
 
         private static readonly SupportedCultures _supportedCultures = new();
 
@@ -32,9 +31,17 @@ namespace NTDLS.Localization
         private readonly string _databaseFile;
         private readonly bool _isAvailable;
         private readonly Lazy<HashSet<string>> _languageColumns;
-        private string _sourceColumn = SourceColumn;
         private readonly ConcurrentDictionary<string, Lazy<Dictionary<string, string>>> _languages = new(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Initializes a new TranslationDatabase instance for the specified SQLite file, stores the file path,
+        /// determines availability without creating the file, logs a warning if the file is missing, and defers loading
+        /// language columns with a lazy initializer.
+        /// </summary>
+        /// <remarks>Opening a nonexistent SQLite file would create an empty database, so the constructor
+        /// checks File.Exists and sets availability accordingly; if the file is missing a warning is logged. Language
+        /// columns are loaded on demand via a Lazy(HashSet of string) that calls ReadLanguageColumns.</remarks>
+        /// <param name="databaseFile">Path to the SQLite translation database file.</param>
         public TranslationDatabase(string databaseFile)
         {
             _databaseFile = databaseFile;
@@ -86,13 +93,14 @@ namespace NTDLS.Localization
                     }
                 }
 
-                _sourceColumn = all.Any(c => c.Name.Equals(SourceColumn, StringComparison.OrdinalIgnoreCase)) ? SourceColumn : LegacySourceColumn;
 
                 //The row id column is found by being the primary key, not by its name: "id" (Indonesian) is a language, and SQLite
                 //  column names are not case sensitive, so the row id column cannot be called "Id" in a database that has it.
                 foreach (var (name, isPrimaryKey) in all)
                 {
-                    if (!isPrimaryKey && !name.Equals(_sourceColumn, StringComparison.OrdinalIgnoreCase))
+                    if (!isPrimaryKey
+                        && !name.Equals(SourceColumn, StringComparison.OrdinalIgnoreCase)
+                        && !name.Equals(LastModifiedColumn, StringComparison.OrdinalIgnoreCase))
                     {
                         columns.Add(name);
                     }
@@ -115,7 +123,7 @@ namespace NTDLS.Localization
                 using var connection = Open();
                 using var command = connection.CreateCommand();
                 var quoted = "\"" + column.Replace("\"", "\"\"") + "\"";
-                command.CommandText = $"SELECT {_sourceColumn}, {quoted} FROM {TableName} WHERE {quoted} IS NOT NULL AND {quoted} <> ''";
+                command.CommandText = $"SELECT {SourceColumn}, {quoted} FROM {TableName} WHERE {quoted} IS NOT NULL AND {quoted} <> ''";
 
                 using var reader = command.ExecuteReader();
                 while (reader.Read())

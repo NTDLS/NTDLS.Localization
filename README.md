@@ -9,10 +9,13 @@ A SQLite file, `Translations\Translations.db` next to the program, with one tabl
 
 ```
 Translation
-    Id       INTEGER PRIMARY KEY
+    TranslationId  INTEGER PRIMARY KEY
     Phrase   TEXT NOT NULL UNIQUE COLLATE NOCASE   -- the English phrase as written in the code: the key
     de, fr, ja, zh-Hans, pt-BR, ...  TEXT          -- one column per language, named by its culture code; empty means "not translated yet"
+    LastModified  TEXT                             -- when the row was last changed (UTC, yyyy-MM-dd HH:mm:ss); not used when looking up
 ```
+
+The row id column is not called `Id` because SQLite column names are not case sensitive and `id` is the code for Indonesian.
 
 Columns are named by the culture code, exactly as .NET writes it (`de`, `zh-Hans`, `pt-BR`). A regional culture uses its language's
 column unless it has a column of its own (`de-AT` uses `de`; plain Norwegian `no` uses `nb`). Databases whose columns still have the
