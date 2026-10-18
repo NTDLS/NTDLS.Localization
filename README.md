@@ -19,7 +19,7 @@ The row id column is not called `Id` because SQLite column names are not case se
 
 Columns are named by the culture code, exactly as .NET writes it (`de`, `zh-Hans`, `pt-BR`). A regional culture uses its language's
 column unless it has a column of its own (`de-AT` uses `de`; plain Norwegian `no` uses `nb`). Databases whose columns still have the
-older language names ("German", "Chinese simplified") and a key column still called `English` are read too; `LocalizerScan` renames them to codes the next time it runs. Each language is read once, the first
+older language names ("German", "Chinese simplified") and a key column still called `English` are read too; `LocalizationScan` renames them to codes the next time it runs. Each language is read once, the first
 time it is needed, and then served from memory. The file is only ever read, never locked or changed.
 
 Copy it to the output folder from the project:
@@ -94,7 +94,43 @@ LocalizationDiagnostics.OnWarning = (message, exception) => Log.Warning(message,
 LocalizationDiagnostics.OnError = (message, exception) => Log.Error(message, exception);
 ```
 
-## Adding phrases
+## Adding phrases: LocalizationScan
 
-A scanner that reads `Localize("...")` calls and the designer files, adds the new phrases to the database and translates the empty
-cells is `LocalizerScan` in the FinderSeeker repository.
+[LocalizationScan](https://github.com/NTDLS/LocalizationScan) is a command line tool that keeps the translation database in step with
+your source code. It:
+
+1. scans every `*.cs` file for `Localize("...")` calls (normal and verbatim strings, formatted text, and calls through a localizer;
+   calls in comments are ignored) and for the text the Windows Forms designer put on forms, and adds the new phrases to the database
+   (creating the database, with a column for every supported language, if it does not exist yet);
+2. clears existing translations that are certainly broken, so they are translated again;
+3. translates the empty cells, one batch of phrases at a time, with several languages in parallel.
+
+Existing, valid translations are never overwritten, so it is safe to run as often as you like. Phrases that cannot be translated are
+left empty and tried again on the next run.
+
+```
+LocalizationScan <rootPath> <projectName> [concurrency]
+```
+
+| Argument | Meaning |
+| --- | --- |
+| `rootPath` | Folder to scan, typically the solution folder. |
+| `projectName` | Project folder under `rootPath` that holds `Translations\Translations.db`. |
+| `concurrency` | Languages to translate at the same time (default 4). |
+
+```
+LocalizationScan "C:\Source\MyApp" "MyApp.UI" 8
+```
+
+Only literal strings can be scanned: `Localize("Search")` is found, `Localize(someVariable)` and `Localize($"...")` are not.
+The `bin`, `obj`, `.git`, `.vs`, `packages`, `Tests`, `Translations` and `publish` folders, and folders ending in `.Tests`, are skipped.
+
+Translations come from an Einkr model and need an API key, given in the `LOCALIZATION_SCAN_API_KEY` environment variable or in a file
+(`C:\EinkrKey.txt`, or the file named by `LOCALIZATION_SCAN_KEY_FILE`). `LOCALIZATION_SCAN_MODEL` chooses the model, and
+`LOCALIZATION_SCAN_ESCALATION_MODEL` names an optional larger model that is given the phrases the first one fails on.
+
+A translation is rejected, and retried, when it is empty, changes or drops a placeholder (`{0}`, `{1:N0}`), adds markup the English does
+not have, or contains letters from the wrong alphabet for the language. This is what keeps a broken translation from replacing the
+English text at run time (see [Using it](#using-it)).
+
+The tool needs the .NET 10 runtime. See its repository for the installer and the full documentation.

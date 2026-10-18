@@ -18,7 +18,7 @@
 		<UseWindowsForms Condition="$(TargetFramework.EndsWith('-windows'))">true</UseWindowsForms>
 
 		<PackageId>NTDLS.Localization</PackageId>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<Authors>NetworkDLS</Authors>
 		<Company>NetworkDLS</Company>
 		<Product>NTDLS.Localization</Product>
