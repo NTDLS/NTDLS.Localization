@@ -122,6 +122,12 @@ LocalizationScan <rootPath> <projectName> [concurrency]
 LocalizationScan "C:\Source\MyApp" "MyApp.UI" 8
 ```
 
+### Checking a translation: `TranslationValidator`
+
+The check that LocalizationScan uses in step 2 is public, so other tools (such as a translation review site) can apply the same rules
+to a single translation. `TranslationValidator.GetProblems(languageCode, key, value)` returns the reasons a translation is certainly broken
+(for example the wrong alphabet for the language, or lost `{0}` placeholders); an empty list means it is acceptable.
+
 Only literal strings can be scanned: `Localize("Search")` is found, `Localize(someVariable)` and `Localize($"...")` are not.
 The `bin`, `obj`, `.git`, `.vs`, `packages`, `Tests`, `Translations` and `publish` folders, and folders ending in `.Tests`, are skipped.
 

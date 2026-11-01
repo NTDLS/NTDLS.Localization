@@ -18,7 +18,7 @@
 		<UseWindowsForms Condition="$(TargetFramework.EndsWith('-windows'))">true</UseWindowsForms>
 
 		<PackageId>NTDLS.Localization</PackageId>
-		<Version>1.0.2</Version>
+		<Version>1.0.4</Version>
 		<Authors>NetworkDLS</Authors>
 		<Company>NetworkDLS</Company>
 		<Product>NTDLS.Localization</Product>
@@ -30,7 +30,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
 	</ItemGroup>
 
 	<ItemGroup Condition="!$(TargetFramework.EndsWith('-windows'))">
